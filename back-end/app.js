@@ -19,6 +19,7 @@ mongoose
   .catch(err => console.error(`Failed to connect to MongoDB: ${err}`))
 
 // load the dataabase models we want to deal with
+const {AboutUs} = require('./models/AboutUs')
 const { Message } = require('./models/Message')
 const { User } = require('./models/User')
 
@@ -77,6 +78,29 @@ app.post('/messages/save', async (req, res) => {
     })
   }
 })
+
+app.use(express.static('public'))
+
+app.get('/about-us', async (req, res)=>{
+  try{
+    const aboutus = await AboutUs.find({})
+    res.json({
+    aboutus: [
+      'I am a Computer Science student at NYU.',
+      'I am interested in backend engineering, data engineering, and AI automation.',
+      'In my free time, I enjoy watching soccer and building software projects.',
+    ],
+    imageUrl: 'http://localhost:5002/me.PNG',
+  })
+  }catch(err){
+      console.error(err)
+      res.status(400).json({
+        error:err,
+        status: 'failed to retrieve about us from the database'
+      })
+    }
+  }
+)
 
 // export the express app we created to make it available to other modules
 module.exports = app // CommonJS export style!
